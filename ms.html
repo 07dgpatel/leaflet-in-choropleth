@@ -1,0 +1,1151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>TML - WebGIS: Market Share</title>
+
+  <!--Properjs -->
+  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+  <!-- Bootstrap -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+
+
+  <!-- Leaflet's CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.5.1/dist/leaflet.css"
+  integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ=="
+  crossorigin=""/>
+  <!-- Leaflet's JS -->
+  <script src="https://unpkg.com/leaflet@1.5.1/dist/leaflet.js"
+  integrity="sha512-GffPMF3RvMeYyc1LWMHtK8EbPv0iNZ8/oTtHPx9/cc2ILxQ+u905qIwdpULaqDkyBKgOaB57QTMg7ztg8Jm2Og=="
+  crossorigin=""></script>
+ 
+  <!-- Leaflet-Provider JS  -->
+  <script src="leaflet-providers.js"></script>
+  <!-- leaflet-search JS CSS  -->
+  <link rel="stylesheet" href="leaflet-search-master/dist/leaflet-search.min.css" />
+  <script src="leaflet-search-master/dist/leaflet-search.src.js"></script>
+
+  <!-- leaflet-defaultextent js CSS   -->
+  <link rel="stylesheet" href="Leaflet.defaultextent-master/dist/leaflet.defaultextent.css" />
+  <script src="Leaflet.defaultextent-master/dist/leaflet.defaultextent.js"></script>
+  <!-- Grouped layer control -->
+  <link rel="stylesheet" href="leaflet-groupedlayercontrol-gh-pages/dist/leaflet.groupedlayercontrol.min.css" />
+  <script src="leaflet-groupedlayercontrol-gh-pages/dist/leaflet.groupedlayercontrol.min.js"></script>
+  <!-- fullscreen -->
+  <script src='https://api.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v1.0.1/Leaflet.fullscreen.min.js'></script>
+  <link href='https://api.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v1.0.1/leaflet.fullscreen.css'
+    rel='stylesheet' />
+  <!-- ZoomSlider -->
+  <script src='Leaflet.zoomslider-master/L.Control.Zoomslider.js'></script>
+  <link rel='stylesheet' href='Leaflet.zoomslider-master/L.Control.Zoomslider.css' />
+  <!-- mousePosition -->
+  <script src="Leaflet.MousePosition-master/L.Control.MousePosition.js"></script>
+  <link rel="stylesheet" href="Leaflet.MousePosition-master/L.Control.MousePosition.css" />
+  <!-- credits -->
+  <script type="text/javascript" src="L.Control.Credits-master/leaflet-control-credits.js"></script>
+  <link rel="stylesheet" href="L.Control.Credits-master/leaflet-control-credits.css" />
+
+  <!-- Layer Panels -->
+  <script type="text/javascript" src="leaflet-panel-layers-master/dist/leaflet-panel-layers.min.js"></script>
+  <link rel="stylesheet" href="leaflet-panel-layers-master/dist/leaflet-panel-layers.min.css" />
+
+  <!-- print -->
+  <script type="text/javascript" src="Leaflet.browser.print-master/dist/leaflet.browser.print.min.js"></script>
+  
+  <!-- Layer Panels 2 -->
+  <script type="text/javascript" src="Leaflet.Control.Layers.Tree-master/L.Control.Layers.Tree.js"></script>
+  <link rel="stylesheet" href="Leaflet.Control.Layers.Tree-master/L.Control.Layers.Tree.css" />
+  
+  
+</head>
+<style>
+  *{
+    margin: 0;
+    padding: 0;
+  }
+
+  html {
+    height: 91%
+  }
+
+  body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+  }
+
+  #map {
+    height: 100%;
+    width: 100%;
+    position: relative;
+    z-index: 0;
+  }
+
+  /* description style */
+  .info  {
+    position: bottomleft !important;
+    right: 46%;
+    padding: 10px 10px;
+    font: 14px/16px Arial, Helvetica, sans-serif;
+    background: white;
+    background: rgba(255, 255, 255, 1);
+    box-shadow: 0 0 15px rgba(0, 0, 0, .5);
+    border-radius: 5px;
+  }
+  
+
+  .info h4 {
+    margin: 0 0 10px;
+    color: #777;
+    position: bottomleft !important;
+  }
+
+  /* choropleth map legend */
+  .legend {
+    position: bottomleft !important;
+    right:86em !important;
+    bottom: 4em;
+    line-height: 18px;
+    color: #555;
+  }
+
+  .legend i {
+    width: 18px;
+    height: 18px;
+    float: left;
+    margin-right: 8px;
+    opacity: 0.7;
+    padding: 4px;
+    position: bottomleft !important;  2
+  }
+
+  /* dafault extent */
+  .leaflet-control-defaultextent {
+    position: fixed;
+    top: 10em;
+  }
+
+  /* fullscreen */
+  .leaflet-control-fullscreen {
+    position: absolute !important;
+    top: 0.5px !important;
+    left: 108em !important;
+
+  }
+
+  /* Layer controler */
+  .leaflet-control-layers {
+    top: 3em !important;
+    position: bottomleft !important;
+
+  }
+
+  .leaflet-control-layers-toggle {
+    position: absolute !important;
+    width: 30px !important;
+    height: 30px !important;
+    inline-size: 20px !important;
+  }
+
+  /* Zoomslider*/
+  .leaflet-control-zoomslider {
+    border: 2px solid rgba(0, 0, 0, 0.2) !important;
+    width: 34px;
+    height: 16.2em;
+    background: transparent !important;
+    top: 3.2em;
+  }
+
+  .leaflet-control-zoomslider-body {
+    border: rgba(255, 255, 255, .4);
+    background: transparent;
+  }
+
+  .leaflet-control-zoomslider-knob {
+    margin-left: -0.9em !important;
+    width: 2em !important;
+    height: 2.5em !important;
+
+    background: rgba(0, 0, 0, 0.2);
+    border: none;
+  }
+
+  .leaflet-control-zoomslider-wrap {
+    background: rgba(255, 255, 255, .4);
+    height: 11em;
+  }
+
+  .leaflet-control-zoomslider a {
+    display: relative;
+  }
+  
+  .leaflet-control-mouseposition {
+    position: absolute !important;
+    bottom: 30% !important;
+    left: 55em !important;
+
+  }
+
+  .navbar-custom .navbar-nav .nav-link {
+    color: rgb(209, 205, 205);
+    padding: 1rem 1rem;
+  }
+  /* change the color of active or hovered links */
+  .navbar-custom .nav-item.active .nav-link,
+  .navbar-custom .nav-item:hover .nav-link {
+      color: #ffffff;
+      background-color:; /* add background-color to active links */
+  }
+  /* navbar-toggler-icon */
+  .navbar-toggler-icon {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='30' height='30' viewBox='0 0 30 30'%3e%3cpath stroke='rgba(255, 255, 255, 1)' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+}
+
+/* leaflet-control-browser-print */
+.leaflet-control-browser-print{
+
+top:2em !important;
+}
+</style>
+
+<body>
+
+ <nav class="navbar navbar-expand-lg py-0 navbar-custom bg-success" role="navigation" >
+    <!-- <a class="navbar-brand" href="#"></a>
+    <img src="/TML_Logo.jpg" height="40px" width="120px"> -->
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse " id="navbarSupportedContent">
+        <ul class="navbar-nav ml-auto flex-nowrap">
+            <li class="nav-item active">
+               <a class="nav-link waves-effect waves-lightda" href="ms.html">Market Share(%)<span class="sr-only">(current)</span></a>
+            </li>
+           
+            <li class="nav-item">
+                <a class="nav-link waves-effect waves-light" href="tiv1.html">TIV2</a>
+            </li>
+        </ul>
+    </div>
+  </nav>
+
+    
+    <div id="map"></div>
+
+    <script type="text/javascript" src="India_States_u.js"></script>
+    <script>
+  
+    //Layers
+
+    var mhcv_10 = L.geoJson(India_States_ms,
+    {
+      style: function (feature){
+        return {
+            fillColor: getColormh(feature.properties.DB_MS_MHCV_L_10),
+            weight: 1,
+            opacity: 1,
+            color: 'Black',
+            // dashArray: '3',
+            fillOpacity: 0.5,
+          } 
+      },  
+      onEachFeature:function (feature, layer){
+      
+      layer.on({
+        mouseover: highlightFeature,
+        mouseout: mhcv10_resetHighlight,
+        click: mhcv10_zoomToFeature
+      });
+     
+      layer.bindTooltip(feature.properties.DB_MS_MHCV_L_10+ "%" , {
+        permanent: true,
+        direction: 'auto',
+        fillOpacity: 0,
+        position: 'fixed',
+        font: 14
+      });
+    }
+    
+    });
+
+    var mhcv_08 = L.geoJson(India_States_ms,
+    {
+      style: function (feature){
+        return {
+            fillColor: getColormh(feature.properties.DB_MS_MHCV_L_08),
+            weight: 1,
+            opacity: 1,
+            color: 'Black',
+            // dashArray: '3',
+            fillOpacity: 0.5,
+          } 
+      },  
+      onEachFeature:function (feature, layer){
+
+      layer.on({
+        mouseover: highlightFeature,
+        mouseout: mhcv08_resetHighlight,
+        click: mhcv08_zoomToFeature
+      });
+
+      layer.bindTooltip(feature.properties.DB_MS_MHCV_L_08+ "%" , {
+        permanent: true,
+        direction: 'auto',
+        fillOpacity: 0,
+        position: 'fixed',
+        font: 14
+      });
+    }
+    });
+
+   var ilcv_10 = L.geoJson(India_States_ms,
+    {
+      style: function (feature){
+        return {
+            fillColor: getColoril(feature.properties.DB_MS_ILCV_L_10),
+            weight: 1,
+            opacity: 1,
+            color: 'Black',
+            // dashArray: '3',
+            fillOpacity: 0.5
+          } 
+      },   
+      onEachFeature:function (feature, layer){
+
+      layer.on({
+        mouseover: highlightFeature,
+        mouseout: ilcv10_resetHighlight,
+        click: ilcv10_zoomToFeature
+      });
+
+      layer.bindTooltip(feature.properties.DB_MS_ILCV_L_10+ "%" , {
+        permanent: true,
+        direction: 'auto',
+        fillOpacity: 0,
+        position: 'fixed',
+        font: 14
+      });
+    }
+    });
+
+    var ilcv_08 = L.geoJson(India_States_ms,
+    {
+      style: function (feature){
+        return {
+            fillColor: getColoril(feature.properties.DB_MS_ILCV_L_08),
+            weight: 1,
+            opacity: 1,
+            color: 'Black',
+            // dashArray: '3',
+            fillOpacity: 0.5
+          } 
+      },   
+      onEachFeature:function (feature, layer){
+
+      layer.on({
+        mouseover: highlightFeature,
+        mouseout: ilcv08_resetHighlight,
+        click: ilcv08_zoomToFeature
+      });
+
+      layer.bindTooltip(feature.properties.DB_MS_ILCV_L_08+ "%" , {
+        permanent: true,
+        direction: 'auto',
+        fillOpacity: 0,
+        position: 'fixed',
+        font: 14
+      });
+    }
+    });
+
+    var scv_10 = L.geoJson(India_States_ms,
+    {
+      style: function (feature){
+        return {
+            fillColor: getColorscv(feature.properties.DB_MS_SCV_PU_L_10),
+            weight: 1,
+            opacity: 1,
+            color: 'Black',
+            // dashArray: '3',
+            fillOpacity: 0.5
+          } 
+      },   
+      onEachFeature:function (feature, layer){
+
+      layer.on({
+        mouseover: highlightFeature,
+        mouseout: scv10_resetHighlight,
+        click: scv10_zoomToFeature
+      });
+
+      layer.bindTooltip(feature.properties.DB_MS_SCV_PU_L_10+ "%" , {
+        permanent: true,
+        direction: 'auto',
+        fillOpacity: 0,
+        position: 'fixed',
+        font: 14
+      });
+    }
+    });
+
+    var scv_08 = L.geoJson(India_States_ms,
+    {
+      style: function (feature){
+        return {
+            fillColor: getColorscv(feature.properties.DB_MS_SCV_PU_L_08),
+            weight: 1,
+            opacity: 1,
+            color: 'Black',
+            // dashArray: '3',
+            fillOpacity: 0.5
+          } 
+      },   
+      onEachFeature:function (feature, layer){
+
+      layer.on({
+        mouseover: highlightFeature,
+        mouseout: scv08_resetHighlight,
+        click: scv08_zoomToFeature
+      });
+
+      layer.bindTooltip(feature.properties.DB_MS_SCV_PU_L_08+ "%" , {
+        permanent: true,
+        direction: 'auto',
+        fillOpacity: 0,
+        position: 'fixed',
+        font: 14
+      });
+    }
+    });
+
+    var cvp_10 = L.geoJson(India_States_ms,
+    {
+      style: function (feature){
+        return {
+            fillColor: getColorcvp(feature.properties.DB_MS_CVP_Buses_Vans_L_10),
+            weight: 1,
+            opacity: 1,
+            color: 'Black',
+            // dashArray: '3',
+            fillOpacity: 0.5
+          } 
+      },   
+      onEachFeature:function (feature, layer){
+
+      layer.on({
+        mouseover: highlightFeature,
+        mouseout: cvp10_resetHighlight,
+        click: cvp10_zoomToFeature
+      });
+
+      layer.bindTooltip(feature.properties.DB_MS_CVP_Buses_Vans_L_10+ "%" , {
+        permanent: true,
+        direction: 'auto',
+        fillOpacity: 0,
+        position: 'fixed',
+        font: 14
+      });
+    }
+    });
+
+    var cvp_08 = L.geoJson(India_States_ms,
+    {
+      style: function (feature){
+        return {
+            fillColor: getColorcvp(feature.properties.DB_MS_CVP_Buses_Vans_L_08),
+            weight: 1,
+            opacity: 1,
+            color: 'Black',
+            // dashArray: '3',
+            fillOpacity: 0.5
+          } 
+      },   
+      onEachFeature:function (feature, layer){
+
+      layer.on({
+        mouseover: highlightFeature,
+        mouseout: cvp08_resetHighlight,
+        click: cvp08_zoomToFeature
+      });
+
+      layer.bindTooltip(feature.properties.DB_MS_CVP_Buses_Vans_L_08+ "%" , {
+        permanent: true,
+        direction: 'auto',
+        fillOpacity: 0,
+        position: 'fixed',
+        font: 14
+      });
+    }
+    });
+  
+    var cv_10 = L.geoJson(India_States_ms,
+    {
+      style: function (feature){
+        return {
+            fillColor: getColorcv(feature.properties.DB_MS_CV_L_10),
+            weight: 1,
+            opacity: 1,
+            color: 'Black',
+            // dashArray: '3',
+            fillOpacity: 0.5
+          } 
+      },   
+      onEachFeature:function (feature, layer){
+
+      layer.on({
+        mouseover: highlightFeature,
+        mouseout: cv10_resetHighlight,
+        click: cv10_zoomToFeature
+      });
+
+      layer.bindTooltip(feature.properties.DB_MS_CV_L_10+ "%" , {
+        permanent: true,
+        direction: 'center',
+        fillOpacity: 0,
+        position: 'fixed',
+        font: 14
+      });
+    }
+    });
+
+    var cv_08 = L.geoJson(India_States_ms,
+    {
+      style: function (feature){
+        return {
+            fillColor: getColorcv(feature.properties.DB_MS_CV_L_08),
+            weight: 1,
+            opacity: 1,
+            color: 'Black',
+            // dashArray: '3',
+            fillOpacity: 0.5
+          } 
+      },   
+      onEachFeature:function (feature, layer){
+
+      layer.on({
+        mouseover: highlightFeature,
+        mouseout: cv08_resetHighlight,
+        click: cv08_zoomToFeature
+      });
+
+      layer.bindTooltip(feature.properties.DB_MS_CV_L_08+ "%" , {
+        permanent: true,
+        direction: 'center',
+        fillOpacity: 0,
+        position: 'fixed',
+        font: 14
+      });
+    }
+    });
+
+    const map =  L.map('map', {
+      center:[22.065, 78.35],
+       renderer: L.svg(),
+      zoom:4,
+      layers:[mhcv_08]
+      });
+    
+    
+    //const map = L.map('map', {}).setView([22.065, 78.35], 4.25);
+    
+    
+    
+    // Add scale line code
+    L.control.scale({
+      imperial: false
+    }).addTo(map);
+    // Fullscreen code
+    map.addControl(new L.Control.Fullscreen());
+    // ZoomtoExtent code
+    /*map.addControl(new L.Control.Zoomslider({
+      zoomControl: true
+    }));
+    */
+    // layertoExtent code
+    L.control.defaultExtent().setCenter([17.30, 79.24]).setZoom(4).addTo(map);
+    // mousePosition code
+    L.control.mousePosition({
+      numDigits: 4,
+      separator: ',',
+      lngFirst: true,
+      prefix: "Longitude,Latitude"
+    }).addTo(map);
+
+
+    // // add wms Layer
+    // var webgis = L.tileLayer.wms('https://wms.qgiscloud.com/07dgpatel/Akke/wms', {
+    //   layers: 'Akkene_Palle',
+    //   format: 'image/png',
+    //   transparent: true
+    // });
+    
+    // add geoJson layer
+    //  var  = L.geoJson(India_States_ms, {
+      //  style: style,
+      //  onEachFeature: onEachFeature
+    // }).addTo(map);
+
+    
+
+    // Color Functions
+
+function getColormh(d) {
+        return d <= -2 ? '#E60000':
+              d <= 2 ? '#FFFF19':
+              d <= 100? '#00ff00':
+              '#999999';
+      }
+
+    
+function getColoril(d) {
+        return d <= -2 ? '#E60000':
+              d <= 2 ? '#FFFF19':
+              d <= 100 ? '#00ff00':
+              '#999999';
+      }
+
+function getColorscv(d) {
+        return d <= -2 ? '#E60000':
+              d <= 2 ? '#FFFF19':
+              d <= 100? '#00ff00':
+              '#999999';
+      }
+
+function getColorcvp(d) {
+        return d <= -2 ? '#E60000':
+              d <= 2 ? '#FFFF19':
+              d <= 100? '#00ff00':
+              '#999999';
+      }
+
+function getColorcv(d) {
+        return d <= -2 ? '#E60000':
+              d <= 2 ? '#FFFF19':
+              d <= 100? '#00ff00':
+              '#999999';
+      }
+
+    // Legend Functions
+
+    var MHlegend = L.control({position: 'bottomright'});
+        MHlegend.onAdd = function (map) {
+
+            var div = L.DomUtil.create('div', 'info legend'),
+                grades = [100,2,-2],
+                labels = ['<b>Map Legend</b><br>'+
+                          '<br>'+'<i style="background:#00ff00"></i>'+'2% upwards' + '<br>'+
+                          '<br><i style="background:#FFFF19"></i>'+'-2% to 2%'+ '<br>'+
+                          '<br><i style="background:#E60000"></i>'+'< -2%'];
+                //from, to;
+                /*
+                  for (var i = 0; i < grades.length; i++) {
+                      from = grades[i];
+                      to = grades[i + 1];
+
+                      labels.push(
+                          '<i style="background:' + getColormh(from ) + '"></i> ' +
+                          from + (to ? '&ndash;' + to : '+'));
+                  }
+                */
+            div.innerHTML = labels;
+            return div;
+        };
+    /*
+    var ILlegend = L.control({position: 'bottomright'});
+        ILlegend.onAdd = function (map) {
+
+            var div = L.DomUtil.create('div', 'info legend'),
+                grades = [100,2,-2],
+                labels = [],
+                from, to;
+
+            for (var i = 0; i < grades.length; i++) {
+                from = grades[i];
+                to = grades[i + 1];
+
+                labels.push(
+                    '<i style="background:' + getColoril(from ) + '"></i> ' +
+                    from + (to ? '&ndash;' + to : '+'));
+            }
+
+            div.innerHTML = labels.join('<br>');
+            return div;
+        };
+      */
+
+      /*
+      var SCVlegend = L.control({position: 'bottomright'});
+          SCVlegend.onAdd = function (map) {
+
+            var div = L.DomUtil.create('div', 'info legend'),
+                grades = [100,2,-2],
+                labels = [],
+                from, to;
+
+            for (var i = 0; i < grades.length; i++) {
+                from = grades[i];
+                to = grades[i + 1];
+
+                labels.push(
+                    '<i style="background:' + getColorscv(from) + '"></i> ' +
+                    from + (to ? '&ndash;' + to : '+'));
+            }
+
+            div.innerHTML = labels.join('<br>');
+            return div;
+        };
+      */
+      /*
+      var CVPlegend = L.control({position: 'bottomright'});
+          CVPlegend.onAdd = function (map) {
+
+            var div = L.DomUtil.create('div', 'info legend'),
+                grades = [100,2,-2],
+                labels = [],
+                from, to;
+
+            for (var i = 0; i < grades.length; i++) {
+                from = grades[i];
+                to = grades[i + 1];
+
+                labels.push(
+                    '<i style="background:' + getColorcvp(from) + '"></i> ' +
+                    from + (to ? '&ndash;' + to : '+'));
+            }
+
+            div.innerHTML = labels.join('<br>');
+            return div;
+        };
+      */
+      /*
+      var CVlegend = L.control({position: 'bottomright'});
+          CVlegend.onAdd = function (map) {
+
+            var div = L.DomUtil.create('div', 'info legend'),
+                grades = [100,2,-2],
+                labels = [],
+                from, to;
+
+            for (var i = 0; i < grades.length; i++) {
+                from = grades[i];
+                to = grades[i + 1];
+
+                labels.push(
+                    '<i style="background:' + getColorcv(from) + '"></i> ' +
+                    from + (to ? '&ndash;' + to : '+'));
+            }
+
+            div.innerHTML = labels.join('<br>');
+            return div;
+        };
+    */
+
+  MHlegend.addTo(map);
+  currentLegend = MHlegend;
+
+
+map.on('baselayerchange', function (eventLayer) {
+    if (eventLayer.name === 'MHCV') {
+        map.removeControl(currentLegend );
+        currentLegend = MHlegend;
+        MHlegend.addTo(map);
+    }
+    else if  (eventLayer.name === 'ILCV') {
+        map.removeControl(currentLegend );
+        currentLegend = ILlegend;
+        ILlegend.addTo(map);
+    }
+    else if  (eventLayer.name === 'SCV') {
+        map.removeControl(currentLegend );
+        currentLegend = SCVlegend;
+        SCVlegend.addTo(map);
+    }
+    else if  (eventLayer.name === 'CV Passenger') {
+        map.removeControl(currentLegend );
+        currentLegend = CVPlegend;
+        CVPlegend.addTo(map);
+    }
+    else if  (eventLayer.name === 'CV') {
+        map.removeControl(currentLegend );
+        currentLegend = CVlegend;
+        CVlegend.addTo(map);
+    }
+    
+  })
+
+  // Layer - Control Panel
+
+  var baseTree = {
+      label: 'Base Layers',
+          children: [
+            {label: 'OpenStreetMap', layer:  L.tileLayer.provider('OpenStreetMap.Mapnik').addTo(map)},
+      ]
+    };
+
+    
+
+  var overalysTree = {
+    label: 'LOBs',
+    selectAllCheckbox:true,
+    selectAllCheckbox: 'Un/select all',
+    children:[
+      {label: '<div id="onlysel">Show only selected</div>'},
+      {
+        label: 'M&HCV',
+        children:[
+          {label: 'Aug19', layer: mhcv_08},
+          {label: 'Oct19', layer: mhcv_10},
+        ]
+      },
+      {
+        label: 'ILCV',
+        children:[
+          {label: 'Aug19', layer: ilcv_08},
+          {label: 'Oct19', layer: ilcv_10},
+        ]
+      },
+      {
+        label: 'SCV & PU',
+        children:[
+          {label: 'Aug19', layer: scv_08},
+          {label: 'Oct19', layer: scv_10},
+        ]
+      },
+      {
+        label: 'CV & Passenger',
+        children:[
+          {label: 'Aug19', layer: cvp_08},
+          {label: 'Oct19', layer: cvp_10},
+        ]
+      },
+      {
+        label: 'CV',
+        children:[
+          {label: 'Aug19', layer: cv_08},
+          {label: 'Oct19', layer: cv_10},
+        ]
+      }
+    ]
+  };
+
+  var options = {
+      // Make the "Landmarks" group exclusive (use radio inputs)
+      //exclusiveGroups: ["LOBs" ,"M&HCV"],
+      // Show a checkbox next to non-exclusive group labels for toggling all
+      groupCheckboxes: true,
+      collapsed: false,
+      activelayer: true,
+      hideSingleBase: false,
+      namedToggle: true,
+      selectorBack: false,
+      collapseAll:'Collapse All',
+      expandAll: 'Expand All',
+    
+    };
+  
+   
+    var hasAllUnSelected = function() {
+            return function(ev, domNode, treeNode, map) {
+                var anySelected = false;
+                function iterate(node)
+                {
+                    if (node.layer && !node.radioGroup) {
+                        anySelected = anySelected || map.hasLayer(node.layer);
+                    }
+                    
+                    if (node.children && !anySelected ) {
+                        node.children.forEach(function(element) { iterate(element); });
+                       
+                    }
+                }
+                iterate(domNode);
+                return !anySelected;
+            };
+        };
+  
+  
+  var lay = L.control.layers.tree(baseTree,overalysTree,options).addTo(map);
+  L.DomEvent.on(L.DomUtil.get('onlysel'), 'click', function() {
+            lay.collapseTree(true).expandSelected(true);
+        });
+
+  /*
+      var baseLayers = {
+      
+      'OpenStreetMap': L.tileLayer.provider('OpenStreetMap.Mapnik').addTo(map),
+      
+       
+          "M&HCV Aug'19": mhcv_08,
+          "M&HCV Oct'19": mhcv_10,
+ 
+     
+          "ILCV Aug'19": ilcv_08,
+          "ILCV Oct'19": ilcv_10,
+    
+         
+          "SCV Aug'19": scv_08,
+          "SCV Oct'19": scv_10,
+          "CVP Aug'19": cvp_08,
+          "CVP Oct'19": cvp_10,
+          "CV Aug'19": cv_08,
+          "CV Oct'19": cv_10
+      };
+        
+        
+      
+
+    var groupedOverlays= {
+      
+    };
+
+    var options = {
+      // Make the "Landmarks" group exclusive (use radio inputs)
+      exclusiveGroups: [],
+     
+      // Show a checkbox next to non-exclusive group labels for toggling all
+      
+      collapsed: false,
+
+      
+      
+    };
+   
+    var layerControl = L.control.groupedLayers(baseLayers,groupedOverlays,options);
+    map.addControl(layerControl);
+*/
+
+  /*. collapseTree().expandSelected().collapseTree(true);
+  L.DomEvent.on(L.DomUtil.get('onlysel'), 'click',function(){
+    options.collapseTree(true).expandSelected(true);
+  });
+  */
+  /*
+    // control that shows state info on hover
+    var info = L.control();
+    // Discription div create
+    info.onAdd = function (map) {
+      this._div = L.DomUtil.create('div', 'info');
+      this.update();
+      return this._div;
+    };
+    // Discription update
+    info.update = function (props) {
+      this._div.innerHTML ='<h4>Market Share(%)</h4>' + (props ? '<b>' + props.States + '</b><br/>' +
+        props.DB_MS_MHCV_L+ "%" +'' : 'Hover over a state');
+    };
+
+    info.addTo(map);
+  */
+
+
+  /*
+    // get color depending on value
+    function getColor(d) {
+       return d <= (-2) ? '#E60000':
+              d <= 2 ? '#FFFF19':
+              d <= 10? '#00ff00':
+              '#999999';
+    }
+  */
+    
+    // get Visiblity 
+    /* function style(feature) {
+      return {
+        fillColor: getColor(feature.properties.),
+        weight: 1,
+        opacity: 1,
+        color: 'Black',
+        // dashArray: '3',
+        fillOpacity: 0.5
+      };
+    }*/
+
+
+    // HighlightFeature
+    function highlightFeature(e) {
+      var layer = e.target;
+
+      layer.setStyle({
+        weight: 2,
+        color: '#a6cee3',
+        dashArray: '',
+        fillOpacity: 0.7
+
+      });
+
+      if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge && !L.Browser.chrome) {
+        layer.bringToFront();
+      }
+      info.update(layer.feature.properties);
+    };
+
+  
+    // reset HighlightFeature
+    function mhcv10_resetHighlight(e) {
+      mhcv_10.resetStyle(e.target);
+      info.update();
+    };
+    function mhcv08_resetHighlight(e) {
+      mhcv_08.resetStyle(e.target);
+      info.update();
+    };
+
+    function ilcv10_resetHighlight(e) {
+      ilcv_10.resetStyle(e.target);
+      info.update();
+    };
+
+    function ilcv08_resetHighlight(e) {
+      ilcv_08.resetStyle(e.target);
+      info.update();
+    };
+
+    function scv10_resetHighlight(e) {
+      scv_10.resetStyle(e.target);
+      info.update();
+    };
+
+    function scv08_resetHighlight(e) {
+      scv_08.resetStyle(e.target);
+      info.update();
+    };
+
+    function cvp10_resetHighlight(e) {
+      cvp_10.resetStyle(e.target);
+      info.update();
+    };
+
+    function cvp08_resetHighlight(e) {
+      cvp_08.resetStyle(e.target);
+      info.update();
+    };
+
+    function cv10_resetHighlight(e) {
+      cv_10.resetStyle(e.target);
+      info.update();
+    };
+
+    function cv08_resetHighlight(e) {
+      cv_08.resetStyle(e.target);
+      info.update();
+    };
+    
+    // on select to zoom feature
+    
+    function mhcv10_zoomToFeature(e) {
+      mhcv_10.fitBounds(e.target.getBounds());
+    };
+
+    function mhcv08_zoomToFeature(e) {
+      mhcv_08.fitBounds(e.target.getBounds());
+    };
+
+    function ilcv10_zoomToFeature(e) {
+      ilcv_10.fitBounds(e.target.getBounds());
+    };
+
+    function ilcv08_zoomToFeature(e) {
+      ilcv_08.fitBounds(e.target.getBounds());
+    };
+    
+    function scv10_zoomToFeature(e) {
+      scv_10.fitBounds(e.target.getBounds());
+    };
+
+    function scv08_zoomToFeature(e) {
+      scv_08.fitBounds(e.target.getBounds());
+    };
+
+    function cvp10_zoomToFeature(e) {
+      cvp_10.fitBounds(e.target.getBounds());
+    };
+
+    function cvp08_zoomToFeature(e) {
+      cvp_08.fitBounds(e.target.getBounds());
+    };
+
+    function cv10_zoomToFeature(e) {
+      cv_10.fitBounds(e.target.getBounds());
+    };
+
+    function cv08_zoomToFeature(e) {
+      cv_08.fitBounds(e.target.getBounds());
+    };
+
+    
+    
+  
+
+    // on each feature event
+  /*  function onEachFeature(feature, layer){
+
+      layer.on({
+        mouseover: highlightFeature,
+        mouseout: resetHighlight,
+        click: zoomToFeature
+      });
+
+      layer.bindTooltip('<b><i>' + feature.properties.States + '</i></b><br>' +feature.properties.DB_MS_MHCV_L+ "%" , {
+        permanent: false,
+        direction: 'auto',
+        fillOpacity: 0,
+        position: 'fixed',
+        font: 14
+      });
+    }*/
+    
+
+      //Credits
+      // var credctrl = L.controlCredits({
+      // image: "./Tata-logo1.png",
+      // link: "http://www.tatamotors.com/",
+      // text: "Interactive mapping<br/>by Tata Motors - Tata Group"
+      // }).addTo(map);
+
+      //Print
+
+    
+
+    /*
+    // legend code
+      var legend = L.control({
+        position: 'bottomright'
+      });
+
+      legend.onAdd = function (map) {
+
+        var div = L.DomUtil.create('div', 'info legend'),
+          
+          grades = [10,2,(-2)],
+          labels = [],
+          from, to;
+          div.innerHTML='<div><b>Legend</b></div>'
+          for (var i = 0; i < grades.length; i++) {
+          from = grades[i];
+          to = grades[i+1];
+          
+    
+          labels.push(
+            '<i style="background:' + getColor(from) + '"></i> ' +
+            from + (to ? ' ' + '&ndash;' + ' ' + to : '+'));
+        }
+
+        div.innerHTML = '<b>Legend</b><br><br>'+labels.join('<br>');
+        return div;
+      };
+      legend.addTo(map);
+
+    */
+
+    
+    
+
+    L.control.browserPrint().addTo(map)
+  </script>
+</body>
+
+</html>
